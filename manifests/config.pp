@@ -1,0 +1,2 @@
+class mockserver::config {
+}

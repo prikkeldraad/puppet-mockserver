@@ -1,0 +1,47 @@
+{
+  "name": "prikkeldraad-mockserver",
+  "version": "1.0.0",
+  "author": "prikkeldraad",
+  "summary": "Mockserver installation and configuration",
+  "license": "MIT",
+  "source": "http://github.com/prikkeldraad/puppet-mockserver",
+  "project_page": "http://github.com/prikkeldraad/puppet-mockserver",
+  "issues_url": "https://github.com/prikkeldraad/puppet-mockserver/issues",
+  "description": "A module to install and configure Mockserver",
+  "dependencies": [
+    {
+      "name": "puppetlabs/stdlib",
+      "version_requirement": ">=2.3.0 <5.0.0"
+    },
+    { 
+      "name": "maestrodev/maven",
+      "version_requirement": ">=1.4.0"
+    },
+    {
+      "name": "puppetlabs/java",
+      "version_requirement": ">=2.1.0"
+    }
+  ],
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "6",
+        "7"
+      ]
+    }
+  ],  
+  "requirements": [
+    {
+      "name": "puppet",
+      "version_requirement": ">=4.5"
+    }
+  ]
+}

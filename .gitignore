@@ -1,0 +1,7 @@
+.git
+.librarian
+pkg
+spec/fixtures
+*.lock
+.tmp
+example

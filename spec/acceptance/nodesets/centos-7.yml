@@ -1,0 +1,7 @@
+HOSTS:
+  centos-7:
+  roles:
+    - master
+CONFIG:
+  log_level: verbose
+  type: git

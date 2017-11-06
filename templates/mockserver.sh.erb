@@ -1,0 +1,73 @@
+#!/bin/bash
+#
+# mockserver
+# 
+# chkconfig: 3 10 90
+# description: Control Mockserver
+#
+
+SERVICE=<%= scope.lookupvar('mockserver::service') %>
+DIR=<%= scope.lookupvar('mockserver::dir') %>/lib/
+PID=/var/run/<%= scope.lookupvar('mockserver::service') %>.pid
+LOG=/var/log/<%= scope.lookupvar('mockserver::service') %>/mockserver.log
+JAR=<%= scope.lookupvar('mockserver::dir') %>/<%= scope.lookupvar('mockserver::install::file') %>
+
+function stop {
+	echo "Stopping $SERVICE ..."
+	if [[ -f $PID ]]; then
+		kill $(cat $PID)
+		rm $PID
+	else
+		echo "$SERVICE not running ..."
+	fi
+}
+
+function start {
+	echo "Starting $SERVICE ..."
+        if [[ ! -f $PID ]]; then
+		nohup java -Xmx512m -Dio.netty.leakDetectionLevel=advanced -Dmockserver.logLevel=WARN \
+                -Droot.logLevel=WARN -Dio.netty.eventLoopThreads=64 -jar $JAR -serverPort 8411 > $LOG 2>&1
+                echo $! > $PID
+	else
+		echo "$SERVICE already running ..."
+	fi
+}
+
+function status {
+	check_pid
+	check_running
+}
+
+function check_pid {
+	if [[ -f $PID ]]; then
+		echo "Found pid $(cat $PID)"
+	fi
+}
+
+function check_running {
+	PROC=$(ps aux | grep $JAR | grep -v grep | awk '{print $2}')
+	if [[ ! -z $PROC ]]; then
+		echo "$JAR seems to be running under pid: $PROC"
+	fi
+}
+
+case $1 in
+	start)
+		start
+	;;
+	stop)
+		stop
+	;;
+        status)
+                status
+        ;;
+	restart)
+		stop &
+		wait %1
+		start
+	;;
+	*)
+		echo $"Usage: $0 {start|stop}"
+		exit 2
+		;;
+esac
