@@ -4,8 +4,8 @@ After=network.target
 
 [Service]
 User=<%= @user %>
-ExecStart=<%= @dir %>/bin/mockserver.sh start
-ExecStop=<%= @dir %>/bin/mockserver.sh stop
+ExecStart=<%= @dir %>/<%= @version %>/bin/mockserver.sh start
+ExecStop=<%= @dir %>/<%= @version %>/bin/mockserver.sh stop
 
 [Install]
 WantedBy=multi-user.target

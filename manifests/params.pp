@@ -3,11 +3,11 @@
 # This class sets default values for mockserver
 #
 class mockserver::params {
-  case $::facts['os']['family'] {
+  case $facts['os']['family'] {
     'Redhat': {
       $shell = '/sbin/nologin'
 
-      case $::facts['os']['release']['major'] {
+      case $facts['os']['release']['major'] {
         '6' : {
           $service_file     = '/etc/init.d/mockserver'
           $service_template = 'mockserver/mockserver.init.erb'
@@ -20,13 +20,13 @@ class mockserver::params {
         }
 
         default: {
-          fail( "$::{facts['os']['family']} $::{facts['os']['release']['major']} is not supported" )
+          fail( "${facts['os']['family']} ${facts['os']['release']['major']} is not supported" )
         }
       }
     }
 
     default: {
-      fail ( "$::{facts['os']['family']} is not supported" )
+      fail ( "${facts['os']['family']} is not supported" )
     }
   }
 
@@ -60,7 +60,7 @@ class mockserver::params {
   # defaults
   $version = '3.10.8'
   $log_dir ='/var/log/mockserver'
-  $dir     = '/opt/mockserver'
+  $dir     = "/opt/mockserver"
   $user    = 'mockserver'
   $group   = 'mockserver'
   $uri     = 'https://repo1.maven.org/maven2/'

@@ -34,7 +34,7 @@ class mockserver (
     $uri     = $mockserver::params::uri,
 
     # jar file with mockserver-netty
-    $file = "mockserver-netty-${mockserver::version}-jar-with-dependencies.jar",
+    $file = "mockserver-netty-${version}-jar-with-dependencies.jar",
 
     # run parameters for mockserver
     $settings = $mockserver::params::settings,
@@ -43,8 +43,24 @@ class mockserver (
     validate_legacy(Stdlib::Compat::Hash, 'validate_hash', $settings)
     validate_legacy(Stdlib::Compat::Hash, 'validate_hash', $service)
 
-    class { 'mockserver::install': } ->
-    class { 'mockserver::config': } ~>
+    class { 'mockserver::config': 
+      service     => $service,
+      settings    => $settings,
+      uri         => $uri,
+      version     => $version,
+      file        => $file,
+      user        => $user,
+      group       => $group,
+      dir         => $dir,
+      log_dir     => $log_dir,
+      log_level   => $log_level,
+      server_port => $server_port,
+    } ->
+    class { 'mockserver::install': 
+      dir     => $dir,
+      file    => $file,
+      version => $version,
+    } ~>
     class { 'mockserver::service': } ->
     Class['mockserver']
 }
