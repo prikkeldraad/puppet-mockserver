@@ -6,11 +6,31 @@
 # description: Control Mockserver
 #
 
-SERVICE=<%= scope.lookupvar('mockserver::service') %>
-DIR=<%= scope.lookupvar('mockserver::dir') %>/lib/
-PID=/var/run/<%= scope.lookupvar('mockserver::service') %>.pid
-LOG=/var/log/<%= scope.lookupvar('mockserver::service') %>/mockserver.log
-JAR=<%= scope.lookupvar('mockserver::dir') %>/<%= scope.lookupvar('mockserver::install::file') %>
+SERVICE=<%= @service['name'] %>
+DIR=<%= @dir %>/lib/
+PID=/var/run/<%= @service['name'] %>.pid
+LOG=/var/log/<%= @service['name'] %>/mockserver.log
+JAR=<%= @dir %>/<%= @file %>
+
+# mockserver settings
+LOG_LEVEL=<%= scope.lookupvar('mockserver::log_level') %>
+SERVER_PORT=<%= scope.lookupvar('mockserver::server_port') %>
+
+<% if @settings.is_a?(::Hash) -%>
+<% if @settings['proxy']['port'] != :undef -%>
+PROXY_PORT=<%= @settings['proxy']['port'] %>
+PROXY_REMOTE_PORT=<%= @settings['proxy']['remote_port'] %>
+PROXY_REMOTE_HOST=<%= @settings['proxy']['remote_host'] %>
+<% proxy = @settings['proxy'] -%>
+<% end -%>
+<% end -%>
+
+# netty settings
+LEAK_DETECTION_LEVEL=<%= @lead_detection_level %>
+EVENT_LOOP_THREADS=<%= @event_loop_threads %>
+
+# java settings
+XMX=<%= @xmx %>
 
 function stop {
 	echo "Stopping $SERVICE ..."
@@ -25,8 +45,14 @@ function stop {
 function start {
 	echo "Starting $SERVICE ..."
         if [[ ! -f $PID ]]; then
-		nohup java -Xmx512m -Dio.netty.leakDetectionLevel=advanced -Dmockserver.logLevel=WARN \
-                -Droot.logLevel=WARN -Dio.netty.eventLoopThreads=64 -jar $JAR -serverPort 8411 > $LOG 2>&1
+		nohup java -Xmx${XMX} \
+                -Dio.netty.leakDetectionLevel=${LEAK_DETECTION_LEVEL} 
+                -Dmockserver.logLevel=${LOG_LEVEL} \
+                -Droot.logLevel=${LOG_LEVEL} \
+                -Dio.netty.eventLoopThreads=${EVENT_LOOP_THREADS} \
+                -jar $JAR \
+                -serverPort ${SERVER_PORT} \
+                > $LOG 2>&1
                 echo $! > $PID
 	else
 		echo "$SERVICE already running ..."

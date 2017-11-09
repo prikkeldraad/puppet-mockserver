@@ -3,9 +3,9 @@ Description=Mockserver
 After=network.target
 
 [Service]
-User=<%= scope.lookupvar('mockserver::user') %>
-ExecStart=<%= scope.lookupvar('mockserver::dir') %>/bin/mockserver.sh start
-ExecStop=<%= scope.lookupvar('mockserver::dir') %>/bin/mockserver.sh stop
+User=<%= @user %>
+ExecStart=<%= @dir %>/bin/mockserver.sh start
+ExecStop=<%= @dir %>/bin/mockserver.sh stop
 
 [Install]
 WantedBy=multi-user.target

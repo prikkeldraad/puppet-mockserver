@@ -1,3 +1,6 @@
+# == Class mockserver::params
+#
+# This class sets default values for mockserver
 #
 class mockserver::params {
   case $::facts['os']['family'] {
@@ -27,21 +30,38 @@ class mockserver::params {
     }
   }
 
-  # Where to stick the external fact for reporting the version
-  # Refer to:
-  #   https://docs.puppet.com/facter/3.5/custom_facts.html#fact-locations
-  #   https://github.com/puppetlabs/facter/commit/4bcd6c87cf00609f28be23f6463a3d76d0b6613c
-#  if versioncmp($::facterversion, '2.4.2') >= 0 {
-#    $facter_dir = '/opt/puppetlabs/facter/facts.d'
-#  }
-#  else {
-#    $facter_dir = '/etc/puppetlabs/facter/facts.d'
-#  }
+  $service = {
+    'name'     => 'mockserver',
+    'file'     => $service_file,
+    'template' => $service_template,
+    'mode'     => $service_mode,
+  }
 
-  $stop_command = 'service mockserver stop && sleep 10'
+  $settings = {
+    log_level   => 'WARN',
+    server_port => 8411,
+    proxy       => {
+      port         => undef,
+      remote_port  => undef,
+      remote_host  => 'localhost',
+    },
+    netty => {
+      lead_detection_level => 'advanced',
+      event_loop_threads  => 64,
+    },
+    java => {
+      xmx => '512m',
+    },
+  }
 
   # java
   $java_home = '/opt/java'
   
+  # defaults
+  $version = '3.10.8'
   $log_dir ='/var/log/mockserver'
+  $dir     = '/opt/mockserver'
+  $user    = 'mockserver'
+  $group   = 'mockserver'
+  $uri     = 'https://repo1.maven.org/maven2/'
 }
