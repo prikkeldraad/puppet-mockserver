@@ -1,11 +1,11 @@
 [Unit]
-Description=Mockserver
-After=network.target
+    Description=wrapper for all Mockserver instances
+    After=network.target
 
 [Service]
-User=<%= @user %>
-ExecStart=<%= @dir %>/<%= @version %>/bin/mockserver.sh start
-ExecStop=<%= @dir %>/<%= @version %>/bin/mockserver.sh stop
+    Type=oneshot
+    ExecStart=/bin/true
+    RemainAfterExit=yes
 
 [Install]
-WantedBy=multi-user.target
+    WantedBy=multi-user.target

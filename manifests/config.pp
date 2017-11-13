@@ -3,7 +3,7 @@
 # Create directories, user
 #
 class mockserver::config (
-  $service,
+  #$name,
   $settings,
   $uri,
   $version,
@@ -71,11 +71,51 @@ class mockserver::config (
     group  => $group,
   }
 
-  file { 'mockserver_service':
+  # config service
+  case $facts['os']['family'] {
+    'Redhat': {
+      $shell = '/sbin/nologin'
+
+      case $facts['os']['release']['major'] {
+        '7' : {
+          $service_file     = "/usr/lib/systemd/system/mockserver@${version}.service"
+          $service_template = 'mockserver/mockserver@.service.erb'
+          $service_mode     = '0644'
+        }
+
+        default: {
+          fail( "${facts['os']['family']} ${facts['os']['release']['major']} is not supported" )
+        }
+      }
+    }
+
+    default: {
+      fail ( "${facts['os']['family']} is not supported" )
+    }
+  }
+
+  $service = {
+    'name'     => "mockserver@${version}",
+    'file'     => $service_file,
+    'template' => $service_template,
+    'mode'     => $service_mode,
+  }
+
+  file { 'mockserver@_service':
     ensure  => file,
     content => template($service['template']),
     path    => $service['file'],
     mode    => $service['mode'],
+    owner   => $user,
+    group   => $group,
+  }
+
+  # wrapper for multiple instances
+  file { 'mockserver_service':
+    ensure  => file,
+    content => template('mockserver/mockserver.service.erb'),
+    path    => '/usr/lib/systemd/system/mockserver.service',
+    mode    => '0644',
     owner   => $user,
     group   => $group,
   }

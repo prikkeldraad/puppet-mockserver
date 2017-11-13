@@ -6,10 +6,10 @@
 # description: Control Mockserver
 #
 
-SERVICE=<%= @service['name'] %>
+SERVICE=<%= @name %>
 DIR=<%= @dir %>/lib/
-PID=/var/run/<%= @service['name'] %>_<%= @version %>.pid
-LOG=/var/log/<%= @service['name'] %>/mockserver_<%= @version %>.log
+PID=/var/run/<%= @name %>_<%= @version %>.pid
+LOG=/var/log/<%= @name %>/mockserver_<%= @version %>.log
 JAR=<%= @dir %>/<%= @version %>/lib/<%= @file %>
 
 # mockserver settings

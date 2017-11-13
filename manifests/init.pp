@@ -18,6 +18,8 @@
 #   Group to assign to user, default mockserver
 #
 class mockserver (
+    #$name    = 'mockserver',
+
     $version = $mockserver::params::version,
     $dir     = $mockserver::params::dir,
     $user    = $mockserver::params::user,
@@ -26,9 +28,6 @@ class mockserver (
     # mockserver parameters
     $log_level   = $mockserver::params::settings['log_level'],
     $server_port = $mockserver::params::settings['server_port'],
-
-    # service hash
-    $service = $mockserver::params::service,
 
     # maven uri
     $uri     = $mockserver::params::uri,
@@ -41,10 +40,10 @@ class mockserver (
 
 ) inherits mockserver::params {
     validate_legacy(Stdlib::Compat::Hash, 'validate_hash', $settings)
-    validate_legacy(Stdlib::Compat::Hash, 'validate_hash', $service)
 
+    notify { "${name}": }
     class { 'mockserver::config': 
-      service     => $service,
+      name        => $name,
       settings    => $settings,
       uri         => $uri,
       version     => $version,
@@ -61,6 +60,8 @@ class mockserver (
       file    => $file,
       version => $version,
     } ~>
-    class { 'mockserver::service': } ->
+    class { 'mockserver::service': 
+      version => $version,
+    } ->
     Class['mockserver']
 }
