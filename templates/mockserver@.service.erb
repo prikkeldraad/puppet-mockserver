@@ -1,0 +1,15 @@
+[Unit]
+    Description=Mockserver <%= @version %>
+    Requires=mockserver.service
+    Before=mockserver.service
+    BindsTo=mockserver.service
+
+[Service]
+    Type=simple
+    User=<%= @user %>
+    SysylogIdentifier=mockserver-%i
+    ExecStart=<%= @dir %>/<%= @version %>/bin/mockserver.sh start
+    ExecStop=<%= @dir %>/<%= @version %>/bin/mockserver.sh stop
+
+[Install]
+    WantedBy=mockserver.service
