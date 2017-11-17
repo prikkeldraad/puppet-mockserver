@@ -1,6 +1,7 @@
 # == Define: mockserver::service::Version
 #
 define mockserver::service::version (
+  $ensure,
   $user,
   $group,
   ) {
@@ -9,19 +10,29 @@ define mockserver::service::version (
 
   # config service
   $shell            = '/sbin/nologin'
-  $service_file     = "/etc/systemd/system/mockserver@${version}.service"
-  $service_template = 'mockserver/mockserver@.service.erb'
-  $service_mode     = '0644'
 
   $service = {
     'name'     => "mockserver@${version}",
-    'file'     => $service_file,
-    'template' => $service_template,
-    'mode'     => $service_mode,
+    'file'     => "/etc/systemd/system/mockserver@${version}.service",
+    'template' => 'mockserver/mockserver@.service.erb',
+    'mode'     => '0644',
+  }
+
+  case $ensure {
+    present: {
+      $real_ensure = file
+      $service_ensure = running
+      $service_enable = true
+    }
+    default: {
+      $real_ensure = absent
+      $service_ensure = stopped
+      $service_enable = false
+    }
   }
 
   file { "mockserver@${version}":
-    ensure  => file,
+    ensure  => $real_ensure,
     content => template($service['template']),
     path    => $service['file'],
     mode    => $service['mode'],
@@ -30,8 +41,8 @@ define mockserver::service::version (
   }
 
   service { "mockserver@${version}":
-    ensure => running,
-    enable => true,
+    ensure => $service_ensure,
+    enable => $service_enable,
     notify => Class['mockserver::service']
   }
 }

@@ -18,14 +18,14 @@
 #   Group to assign to user, default mockserver
 #
 class mockserver (
-    Array  $version     = $mockserver::params::version,
+    Hash   $versions    = $mockserver::params::version,
     String $install_dir = $mockserver::params::install_dir,
     String $user        = $mockserver::params::user,
     String $group       = $mockserver::params::group,
     String $log_dir     = $mockserver::params::log_dir,
 
     # mockserver parameters
-    String  $log_level   = $mockserver::params::settings['log_level'],
+    Enum['OFF', 'ERROR', 'WARN', 'INFO', 'DEBUG', 'TRACE', 'ALL'] $log_level = $mockserver::params::settings['log_level'],
     Integer $server_port = $mockserver::params::settings['server_port'],
 
     # maven uri
@@ -37,24 +37,38 @@ class mockserver (
 ) inherits mockserver::params {
 
     class {'java': }
-    class { 'mockserver::config':
-      name        => $name,
-      settings    => $settings,
-      uri         => $uri,
-      versions    => $version,
+    package { 'maven':
+      ensure => installed,
+    }
+    class { 'mockserver::config::global':
       user        => $user,
       group       => $group,
       install_dir => $install_dir,
-      log_dir     => $log_dir,
-      log_level   => $log_level,
-      server_port => $server_port,
+      log_dir     => $log_dir
     }
-    -> mockserver::install {$version:
-      install_dir => $install_dir,
-    }
-    -> class { 'mockserver::service': }
-    mockserver::service::version {$version:
-      user  => $user,
-      group => $group,
+    class { 'mockserver::service': }
+    $versions.each |String $version, Hash $params| {
+      mockserver::config {$version:
+        ensure      => $params['ensure'],
+        user        => $user,
+        group       => $group,
+        version     => $version,
+        settings    => $settings,
+        install_dir => $install_dir,
+        log_dir     => $log_dir,
+        log_level   => $log_level,
+        server_port => $server_port,
+      }
+      -> mockserver::install {$version:
+        ensure      => $params['ensure'],
+        version     => $version,
+        install_dir => $install_dir,
+      }
+      -> mockserver::service::version {$version:
+        ensure => $params['ensure'],
+        user   => $user,
+        group  => $group,
+      }
+      ~> Class['mockserver::service']
     }
 }

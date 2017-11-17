@@ -4,14 +4,22 @@
 # Install java
 #
 define mockserver::install (
+  $ensure,
+  $version,
   $install_dir,
   ){
 
-  $version = $title
   $file = "mockserver-netty-${version}-jar-with-dependencies.jar"
 
-  maven { "${install_dir}/${version}/lib/${file}":
-    id    => "org.mock-server:mockserver-netty:${version}:jar:jar-with-dependencies",
-    repos => ['central::default::http://https://repo1.maven.org/maven2/'],
+  case $ensure {
+    present: {
+      maven { "${install_dir}/${version}/lib/${file}":
+        id    => "org.mock-server:mockserver-netty:${version}:jar:jar-with-dependencies",
+        repos => ['central::default::http://https://repo1.maven.org/maven2/'],
+      }
+    }
+    default: {
+      file { "${install_dir}/${version}/lib/${file}": ensure => absent }
+    }
   }
 }
