@@ -22,12 +22,12 @@ class mockserver::params {
 
   # java
   $java_home = '/opt/java'
-  
+
   # defaults
-  $version = '3.10.8'
-  $log_dir ='/var/log/mockserver'
-  $dir     = "/opt/mockserver"
-  $user    = 'mockserver'
-  $group   = 'mockserver'
-  $uri     = 'https://repo1.maven.org/maven2/'
+  $version     = ['3.10.8']
+  $log_dir     ='/var/log/mockserver'
+  $install_dir = '/opt/mockserver'
+  $user        = 'mockserver'
+  $group       = 'mockserver'
+  $uri         = 'https://repo1.maven.org/maven2/'
 }

@@ -1,16 +1,16 @@
 #!/bin/bash
 #
 # mockserver
-# 
+#
 # chkconfig: 3 10 90
 # description: Control Mockserver
 #
 
 SERVICE=<%= @name %>
-DIR=<%= @dir %>/lib/
+DIR=<%= @install_dir %>/lib/
 PID=/var/run/<%= @name %>_<%= @version %>.pid
 LOG=/var/log/<%= @name %>/mockserver_<%= @version %>.log
-JAR=<%= @dir %>/<%= @version %>/lib/<%= @file %>
+JAR=<%= @install_dir %>/<%= @version %>/lib/<%= @file %>
 
 # mockserver settings
 LOG_LEVEL=<%= @log_level %>
