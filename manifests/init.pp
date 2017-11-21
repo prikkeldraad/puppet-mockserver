@@ -65,9 +65,10 @@ class mockserver (
         install_dir => $install_dir,
       }
       -> mockserver::service::version {$version:
-        ensure => $params['ensure'],
-        user   => $user,
-        group  => $group,
+        ensure      => $params['ensure'],
+        user        => $user,
+        group       => $group,
+        install_dir => $install_dir,
       }
       ~> Class['mockserver::service']
     }

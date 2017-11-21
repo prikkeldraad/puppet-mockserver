@@ -4,6 +4,7 @@ define mockserver::service::version (
   $ensure,
   $user,
   $group,
+  $install_dir,
   ) {
 
   $version = $title
