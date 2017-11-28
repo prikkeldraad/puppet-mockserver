@@ -2,9 +2,7 @@
 #
 # Enable the wrapper for all mockservers
 
-class mockserver::service (
-  $version,
-  ){
+class mockserver::service {
 
   # refresh daemon because else there might be access denied error
   exec { 'daemon-reexec':
@@ -17,8 +15,4 @@ class mockserver::service (
     enable => true,
   }
 
-  service { "mockserver@${version}":
-    ensure => running,
-    enable => true,
-  }
 }
