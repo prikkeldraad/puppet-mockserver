@@ -5,7 +5,6 @@
 class mockserver::params {
   $settings = {
     log_level   => 'WARN',
-    server_port => 8411,
     proxy       => {
       port         => undef,
       remote_port  => undef,
@@ -26,7 +25,8 @@ class mockserver::params {
   # defaults
   $versions    = {
     '3.10.8' => {
-      ensure => present
+      ensure      => present,
+      server_port => 8411,
     }
   }
   $log_dir     ='/var/log/mockserver'

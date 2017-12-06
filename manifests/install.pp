@@ -7,9 +7,8 @@ define mockserver::install (
   $ensure,
   $version,
   $install_dir,
+  $file,
   ){
-
-  $file = "mockserver-netty-${version}-jar-with-dependencies.jar"
 
   case $ensure {
     present: {

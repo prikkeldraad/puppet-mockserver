@@ -12,6 +12,7 @@ define mockserver::config (
   $log_dir,
   $log_level,
   $server_port,
+  $file,
   ) {
 
   case $ensure {
@@ -31,6 +32,9 @@ define mockserver::config (
     ensure => $directory_ensure,
   }
   file { "${install_dir}/${version}/lib":
+    ensure => $directory_ensure,
+  }
+  file { "${install_dir}/${version}/log":
     ensure => $directory_ensure,
   }
 
