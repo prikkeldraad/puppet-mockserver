@@ -1,36 +1,55 @@
 # puppet-mockserver
-Puppet module for installation of MockServer (https://github.com/jamesdbloom/mockserver)
+Puppet module for installation of MockServer (https://github.com/jamesdbloom/mockserver)  
 Running multiple times with different versions it installs multiple instances, mind to assign different ports
 
-Example of site.pp with single installation of MockServer
-# Example
-    node 'default' {
-      maven::settings { 'maven-user-settings':
-        mirrors => [{
-          id => "nexus",
-          url => "http://central.maven.org/maven2/",
-          mirrorof => "*",
-        }]
-      }
+# Examples
+NOTE: maven settings are optional. Use those when you have your own proxy for maven central.
 
-      class { 'mockserver':
-      }
-    }
+## Single version
 
-Multi install
-# Example
-    node 'default' {
-      maven::settings { 'maven-user-settings':
-        mirrors => [{
-          id => "nexus",
-          url => "http://central.maven.org/maven2/",
-          mirrorof => "*",
-        }]
-      }
+```puppet
+$maven_url       = 'http://your_nexus_url'
+$maven_id        = 'nexus'
+$maven_mirror_of = '*'
 
-      class { 'mockserver':
-        log_level   => 'WARN',
-        server_port => 8413,
-        version     => '3.11',
-      }
-    }
+maven::settings { 'maven-user-settings':
+  mirrors => [{
+    id       => $maven_id,
+    url      => $maven_url,
+    mirrorof => $maven_mirror_of
+  }]
+}
+
+class { 'mockserver': }
+```
+
+## Multi version install
+
+```puppet
+$versions = {
+  '3.10.8' => {
+    ensure      => present,
+    server_port => 8411
+  },
+  '3.6.2' => {
+    ensure      => present,
+    server_port => 8412
+  }
+}
+
+$maven_url       = 'http://your_nexus_url'
+$maven_id        = 'nexus'
+$maven_mirror_of = '*'
+
+maven::settings { 'maven-user-settings':
+  mirrors => [{
+    id       => $maven_id,
+    url      => $maven_url,
+    mirrorof => $maven_mirror_of
+  }]
+}
+
+class { 'mockserver':
+  versions  => $versions
+}
+```

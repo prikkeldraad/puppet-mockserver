@@ -1,16 +1,16 @@
 #!/bin/bash
 #
 # mockserver
-# 
+#
 # chkconfig: 3 10 90
 # description: Control Mockserver
 #
 
 SERVICE=<%= @name %>
-DIR=<%= @dir %>/lib/
-PID=/var/run/<%= @name %>_<%= @version %>.pid
-LOG=/var/log/<%= @name %>/mockserver_<%= @version %>.log
-JAR=<%= @dir %>/<%= @version %>/lib/<%= @file %>
+DIR=<%= @install_dir %>/<%= @version -%>/log/
+PID=/var/run/mockserver_<%= @version %>.pid
+LOG=/var/log/mockserver/mockserver_<%= @version %>.log
+JAR=<%= @install_dir %>/<%= @version %>/lib/<%= @file %>
 
 # mockserver settings
 LOG_LEVEL=<%= @log_level %>
@@ -30,67 +30,68 @@ EVENT_LOOP_THREADS=<%= @settings['netty']['event_loop_threads'] %>
 XMX=<%= @settings['java']['xmx'] %>
 
 function stop {
-	echo "Stopping $SERVICE ..."
-	if [[ -f $PID ]]; then
-		kill $(cat $PID)
-		rm $PID
-	else
-		echo "$SERVICE not running ..."
-	fi
+  echo "Stopping $SERVICE ..."
+  if [[ -f $PID ]]; then
+    kill $(cat $PID)
+    rm $PID
+  else
+    echo "$SERVICE not running ..."
+  fi
 }
 
 function start {
-	echo "Starting $SERVICE ..."
-        if [[ ! -f $PID ]]; then
-		nohup java -Xmx${XMX} \
-                -Dio.netty.leakDetectionLevel=${LEAK_DETECTION_LEVEL} \
-                -Dmockserver.logLevel=${LOG_LEVEL} \
-                -Droot.logLevel=${LOG_LEVEL} \
-                -Dio.netty.eventLoopThreads=${EVENT_LOOP_THREADS} \
-                -jar $JAR \
-                -serverPort ${SERVER_PORT} \
-                > $LOG 2>&1
-                echo $! > $PID
-	else
-		echo "$SERVICE already running ..."
-	fi
+  echo "Starting $SERVICE ..."
+  if [[ ! -f $PID ]]; then
+    cd ${DIR}
+    nohup java -Xmx${XMX} \
+      -Dio.netty.leakDetectionLevel=${LEAK_DETECTION_LEVEL} \
+      -Dmockserver.logLevel=${LOG_LEVEL} \
+      -Droot.logLevel=${LOG_LEVEL} \
+      -Dio.netty.eventLoopThreads=${EVENT_LOOP_THREADS} \
+      -jar $JAR \
+      -serverPort ${SERVER_PORT} \
+      > $LOG 2>&1
+    echo $! > $PID
+  else
+    echo "$SERVICE already running ..."
+  fi
 }
 
 function status {
-	check_pid
-	check_running
+  check_pid
+  check_running
 }
 
 function check_pid {
-	if [[ -f $PID ]]; then
-		echo "Found pid $(cat $PID)"
-	fi
+  if [[ -f $PID ]]; then
+    echo "Found pid $(cat $PID)"
+  fi
 }
 
 function check_running {
-	PROC=$(ps aux | grep $JAR | grep -v grep | awk '{print $2}')
-	if [[ ! -z $PROC ]]; then
-		echo "$JAR seems to be running under pid: $PROC"
-	fi
+  PROC=$(ps aux | grep $JAR | grep -v grep | awk '{print $2}')
+  if [[ ! -z $PROC ]]; then
+    echo "$JAR seems to be running under pid: $PROC"
+  fi
 }
 
 case $1 in
-	start)
-		start
-	;;
-	stop)
-		stop
-	;;
-        status)
-                status
-        ;;
-	restart)
-		stop &
-		wait %1
-		start
-	;;
-	*)
-		echo $"Usage: $0 {start|stop}"
-		exit 2
-		;;
+  start)
+    start
+  ;;
+  stop)
+    stop
+  ;;
+  status)
+    status
+  ;;
+  restart)
+    stop &
+    wait %1
+    start
+  ;;
+  *)
+    echo $"Usage: $0 {start|stop}"
+    exit 2
+  ;;
 esac

@@ -5,7 +5,6 @@
 class mockserver::params {
   $settings = {
     log_level   => 'WARN',
-    server_port => 8411,
     proxy       => {
       port         => undef,
       remote_port  => undef,
@@ -22,12 +21,17 @@ class mockserver::params {
 
   # java
   $java_home = '/opt/java'
-  
+
   # defaults
-  $version = '3.10.8'
-  $log_dir ='/var/log/mockserver'
-  $dir     = "/opt/mockserver"
-  $user    = 'mockserver'
-  $group   = 'mockserver'
-  $uri     = 'https://repo1.maven.org/maven2/'
+  $versions    = {
+    '3.10.8' => {
+      ensure      => present,
+      server_port => 8411,
+    }
+  }
+  $log_dir     ='/var/log/mockserver'
+  $install_dir = '/opt/mockserver'
+  $user        = 'mockserver'
+  $group       = 'mockserver'
+  $uri         = 'https://repo1.maven.org/maven2/'
 }
